@@ -7,7 +7,7 @@
 
 	import { onMount } from 'svelte';
 	import { marked } from 'marked';
-  import markedCodePreview from 'marked-code-preview'
+	import markedCodePreview from 'marked-code-preview';
 	import SpeechRecognition from '$lib/components/SpeechRecognition.svelte';
 
 	let key: string = '';
@@ -32,12 +32,11 @@
 		}
 	});
 
-  function handleSpeech(event) {
+	function handleSpeech(event) {
 		console.log('Recognized speech:', event.detail.transcript);
-    console.log(event)
-    prompt = event.detail.transcript;
+		console.log(event);
+		prompt = event.detail.transcript;
 	}
-
 
 	function handleGenerate(prompt) {
 		loading = true;
@@ -45,9 +44,10 @@
 		let fr = new FileReader();
 		fr.readAsDataURL(fileInp[0]);
 		fr.addEventListener('loadend', (e) => {
-			vision(prompt, e?.currentTarget.result)
+			vision(prompt + 'using the provided the design with ONLY the code', e?.currentTarget.result)
 				.then((e) => {
 					textContent = e.message.content;
+					console.log(e);
 					loading = false;
 					generated = true;
 				})
@@ -127,23 +127,25 @@
 		return response.choices[0];
 	}
 
-  function text(e){
-    console.log(e);
-  }
+	function text(e) {
+		console.log(e);
+	}
 
-  function countWords(text) {
-    // Ensure the input is a string
-    if (typeof text !== 'string') {
-        return 0;
-    }
+	function countWords(text) {
+		// Ensure the input is a string
+		if (typeof text !== 'string') {
+			return 0;
+		}
 
-    // Split the text by spaces and filter out empty strings
-    const wordsArray = text.trim().split(/\s+/).filter(word => word.length > 0);
+		// Split the text by spaces and filter out empty strings
+		const wordsArray = text
+			.trim()
+			.split(/\s+/)
+			.filter((word) => word.length > 0);
 
-    // Return the number of words
-    return wordsArray.length;
-}
-
+		// Return the number of words
+		return wordsArray.length;
+	}
 
 	function sendHandler(): void {
 		if (fileInp) {
@@ -162,38 +164,90 @@
 	}
 </script>
 
-<div class="flex h-full">
+<div class="flex h-full flex-col sm:flex-row">
 	<div class="flex-1 flex flex-col p-2 gap-4">
 		{#if !keyvalid}
-    <input type="password" placeholder="API Key" bind:value={key} />
-    <button on:click={connectHandler}>Connect</button>
+    <div class="flex w-full justify-center">
+      <div class="w-full gap-2 flex flex-col justify-center">
+        <div class="text-center bg-slate-200 border-2 rounded-md text-slate-500 p-3 border-slate-400">
+          <p>This is a design tool to help you generate code given a prompt and a design using the OpenAI
+            Vision API as well as the ChatGPT-4o model. </p>
+            <br />
+            <p class="border-t-2 border-slate-300 border-dashed pt-4">Please make sure you have an <a
+            class="underline underline-offset-2 font-bold"
+            href="https://platform.openai.com/account/api-keys"
+            target="_blank">OpenAI API key</a
+          ></p>
+        </div>
+        <input type="password" placeholder="Enter an OpenAI API Key" bind:value={key} />
+        <button on:click={connectHandler}>Connect</button>
+      </div>
+    </div>
+
+		{:else}
+			<div class="flex w-full gap-2 border-b-2 pb-3">
+				<input type="text" placeholder="Prompt" bind:value={prompt} />
+				<SpeechRecognition />
+			</div>
+			<div class="flex gap-3">
+				<div class="flex flex-1 flex-col">
+					<div class="flex items-center justify-center w-full">
+						<label
+							for="doc"
+							class="flex items-center p-4 gap-3 rounded-md border-2 border-gray-300 border-dashed bg-gray-50 cursor-pointer w-full justify-center"
+						>
+							<div class="space-y-2 w-full text-center">
+								<h4 class="text-base font-semibold text-gray-700">
+									{#if !fileInp}
+										Upload a design
+									{:else}
+										{fileInp[0].name}
+									{/if}
+								</h4>
+
+								<!-- <h4 class="text-base font-semibold text-gray-700">{#if !fileInp.length}Upload a file{:else}{fileInp[0].name}{/if}</h4> -->
+							</div>
+							<input
+								type="file"
+								id="doc"
+								name="doc"
+								accept="png, jpg"
+								bind:files={fileInp}
+								hidden
+							/>
+						</label>
+					</div>
+				</div>
+				<div class="flex items-center relative justify-center">
+					<span class="bg-white z-10">or</span>
+					<div class="h-full border-r-2 border-slate-200 absolute"></div>
+				</div>
+				<button>Create</button>
+			</div>
+
+			<textarea
+				bind:value={codeSample}
+				class="h-full flex-1"
+				style="resize: none"
+				placeholder="Enter a Code Sample to adhere to (optional)"
+			></textarea>
+			<button on:click={sendHandler}>Submit</button>
 		{/if}
-
-    <div class="flex w-full gap-2">
-      <input type="text" placeholder="Prompt" bind:value={prompt} />
-      <SpeechRecognition {text} />
-    </div>
-
-		<input type="file" bind:files={fileInp} />
-
-		<textarea
-			bind:value={codeSample}
-			class="h-full flex-1"
-			style="resize: none"
-			placeholder="Code Sample"
-		></textarea>
-		<button on:click={sendHandler}>Submit</button>
 	</div>
-	<div class="flex-1 p-2 flex flex-col gap-4">
-		<div class="border-2 h-full w-full rounded-md p-3 overflow-y-auto overflow-x-hidden">
-			{@html marked.use(markedCodePreview).parse(textContent)}
+	{#if keyvalid}
+		<div class="flex-1 p-2 flex flex-col gap-4">
+			<div class="border-2 h-full w-full rounded-md p-3 overflow-y-auto overflow-x-hidden">
+				{@html marked.use({ gfm: true }).use(markedCodePreview()).parse(textContent)}
+			</div>
+			{#if textContent}
+				<div class="flex-end p-2 pb-3">
+					<span class="bg-slate-200 text-slate-400 p-2 rounded-md"
+						>Word Count: {countWords(textContent)}</span
+					>
+				</div>
+			{/if}
 		</div>
-    {#if textContent}
-    <div class="flex-end p-2 pb-3">
-      <span class="bg-slate-200 text-slate-400 p-2 rounded-md">Word Count: {countWords(textContent)}</span>
-    </div>
-    {/if}
-	</div>
+	{/if}
 </div>
 
 <style>

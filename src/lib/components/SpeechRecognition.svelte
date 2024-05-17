@@ -5,7 +5,7 @@ let { text } = $props();
 
 let recognition;
 const dispatch = createEventDispatcher();
-let isListening = false;
+let isListening = $state(false);
 
 onMount(() => {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -15,7 +15,7 @@ onMount(() => {
 
   const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
   recognition = new SpeechRecognition();
-  recognition.continuous = true;
+  recognition.continuous = false;
   recognition.interimResults = false;
   recognition.lang = 'en-US';
 
@@ -26,12 +26,11 @@ onMount(() => {
   };
 
   recognition.onstart = () => {
-    isListening = true;
-    console.log('test')
+    console.log('starting', isListening);
   };
 
   recognition.onend = () => {
-    isListening = false;
+    console.log('stopping', isListening);
   };
 
 });
@@ -49,10 +48,11 @@ function toggleListening() {
   } else {
     recognition.start();
   }
+  isListening = !isListening;
 }
 </script>
 
-<button class="bg-blue-400 text-white px-4 py-2 rounded" on:click={toggleListening}>
+<button class="bg-blue-500 text-white w-[95px] py-2 rounded" on:click={toggleListening}>
 {#if isListening}
   Stop
 {:else}
