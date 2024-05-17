@@ -6,13 +6,9 @@
 	};
 
 	import { onMount } from 'svelte';
-	import type { PageData } from './$types';
 	import { marked } from 'marked';
   import markedCodePreview from 'marked-code-preview'
 	import SpeechRecognition from '$lib/components/SpeechRecognition.svelte';
-
-
-	export let data: PageData;
 
 	let key: string = '';
 	let openai: OpenAIInstance = null;
