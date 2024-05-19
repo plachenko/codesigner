@@ -1,11 +1,11 @@
 <script lang="ts">
-import { createEventDispatcher, onMount, onDestroy } from 'svelte';
+import { onMount, onDestroy } from 'svelte';
 
-let { text } = $props();
+let { handleSpeech } = $props();
 
 let recognition;
-const dispatch = createEventDispatcher();
 let isListening = $state(false);
+let transcript = '';
 
 onMount(() => {
   if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
@@ -20,17 +20,15 @@ onMount(() => {
   recognition.lang = 'en-US';
 
   recognition.onresult = (event) => {
-    const transcript = event.results[event.results.length - 1][0].transcript.trim();
-    text = transcript;
-    console.log('transcript', transcript)
+    transcript = event.results[event.results.length - 1][0].transcript.trim();
   };
 
   recognition.onstart = () => {
-    console.log('starting', isListening);
   };
 
   recognition.onend = () => {
-    console.log('stopping', isListening);
+    handleSpeech(transcript);
+    isListening = false;
   };
 
 });
@@ -52,7 +50,7 @@ function toggleListening() {
 }
 </script>
 
-<button class="bg-blue-500 text-white w-[95px] py-2 rounded" on:click={toggleListening}>
+<button class="bg-blue-500 text-white w-[95px] py-2 rounded" onclick={toggleListening}>
 {#if isListening}
   Stop
 {:else}
