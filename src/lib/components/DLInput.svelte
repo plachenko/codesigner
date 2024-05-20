@@ -1,14 +1,9 @@
 <script>
-  import { onMount } from "svelte";
   let inputText = $state('');
   let dataList = $state([]);
 
   let { input } = $props();
   let highlightedIndex = $state(-1);
-
-  onMount(() => {
-    filterList();
-  });
 
   function filterList() {
     if (inputText === '') {
@@ -21,21 +16,6 @@
   }
 
 </script>
-
-<style>
-  .autocomplete-items {
-    border: 1px solid #d4d4d4;
-    max-height: 150px;
-    overflow-y: auto;
-  }
-  .autocomplete-items div {
-    padding: 10px;
-    cursor: pointer;
-  }
-  .autocomplete-items div:hover {
-    background-color: #e9e9e9;
-  }
-</style>
 
 <!-- Input field -->
 <div class="flex relative">

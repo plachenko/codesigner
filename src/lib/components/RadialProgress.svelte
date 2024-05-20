@@ -14,6 +14,7 @@
     let size = 30;
 
     onMount(() => {
+
         gsap.from(progressMeter, {
           ease: 'bounce.in',
           duration: 1,

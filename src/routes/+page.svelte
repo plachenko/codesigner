@@ -9,7 +9,7 @@
 	import { marked } from 'marked';
 	import markedCodePreview from 'marked-code-preview';
 	import SpeechRecognition from '$lib/components/SpeechRecognition.svelte';
-    import Settings from '$lib/components/Settings.svelte';
+	import Settings from '$lib/components/Settings.svelte';
 
 	import RadialProgress from '$lib/components/RadialProgress.svelte';
 
@@ -119,9 +119,8 @@
 						{
 							type: 'image_url',
 							image_url: {
-								url:
-									img ||
-									'https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/Gfp-wisconsin-madison-the-nature-boardwalk.jpg/2560px-Gfp-wisconsin-madison-the-nature-boardwalk.jpg'
+								url: img,
+                detail: "low"
 							}
 						}
 					]
@@ -198,8 +197,7 @@
 				</div>
 			</div>
 		{:else}
-        <Settings />
-
+			<Settings />
 
 			<div class="flex w-full gap-2 border-b-2 pb-3">
 				<input type="text" placeholder="Prompt" bind:value={prompt} />
@@ -207,7 +205,10 @@
 			</div>
 			<div class="flex gap-3">
 				<div class="flex flex-1 flex-col">
-					<div class="flex items-center justify-center w-full">
+					<div class="flex items-center justify-center w-full gap-3">
+            {#if fileInp}
+              <button class="h-full" on:click={() => fileInp = null}>Remove</button>
+            {/if}
 						<label
 							for="doc"
 							class="flex items-center p-4 gap-3 rounded-md border-2 border-gray-300 border-dashed bg-gray-50 cursor-pointer w-full justify-center"

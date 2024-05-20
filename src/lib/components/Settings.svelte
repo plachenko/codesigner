@@ -1,59 +1,56 @@
 <script lang="ts">
-  import DLInput from "./DLInput.svelte";
-  const programmingLanguages = [
-    "JavaScript",
-    "Python",
-    "Java",
-    "C++",
-    "C#",
-    "Ruby",
-    "Go",
-    "PHP",
-    "Swift",
-    "TypeScript",
-    "Kotlin",
-    "Rust",
-    "Scala",
-    "Perl",
-    "R",
-    "Objective-C",
-    "Haskell",
-    "Lua",
-    "Elixir",
-    "Clojure"
-];
+	import DLInput from './DLInput.svelte';
+	const programmingLanguages = [
+		'JavaScript',
+		'Python',
+		'Java',
+		'C++',
+		'C#',
+		'Ruby',
+		'Go',
+		'PHP',
+		'Swift',
+		'TypeScript',
+		'Kotlin',
+		'Rust',
+		'Scala',
+		'Perl',
+		'R',
+		'Objective-C',
+		'Haskell',
+		'Lua',
+		'Elixir',
+		'Clojure'
+	];
 
-const javascriptFrameworks = [
-  "React",
-  "Angular",
-  "Vue.js",
-  "Ember.js",
-  "Svelte",
-  "Backbone.js",
-  "Next.js",
-  "Nuxt.js",
-  "Meteor",
-  "Express.js"
-];
-
+	const javascriptFrameworks = [
+		'React',
+		'Angular',
+		'Vue.js',
+		'Ember.js',
+		'Svelte',
+		'Backbone.js',
+		'Next.js',
+		'Nuxt.js',
+		'Meteor',
+		'Express.js'
+	];
 </script>
+
 <button popovertarget="settingsPopover">settings</button>
 
 <div
-  id="settingsPopover"
-  popover
-  class="w-[90%] h-[90%] rounded-md border-2 border-slate-300 shadow-md p-3"
+	id="settingsPopover"
+	popover
+	class="w-[90%] h-[90%] rounded-md border-2 border-slate-300 shadow-md p-3"
 >
-
-<div class="flex gap-2 flex-col">
-
-  <DLInput input={ programmingLanguages } />
-  <DLInput input={ programmingLanguages } />
-</div>
+	<div class="flex gap-2 flex-col">
+		<DLInput input={programmingLanguages} />
+	</div>
 </div>
 
 <style>
-  	button {
+	button {
 		padding: 10px 20px;
 		border: none;
 		border-radius: 4px;
