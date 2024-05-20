@@ -11,6 +11,7 @@
 	import SpeechRecognition from '$lib/components/SpeechRecognition.svelte';
 	import Settings from '$lib/components/Settings.svelte';
 
+  import CreateDisplay from '$lib/components/CreateDisplay.svelte';
 	import RadialProgress from '$lib/components/RadialProgress.svelte';
 
 	let key: string = $state('');
@@ -239,8 +240,9 @@
 					<span class="bg-white z-10">or</span>
 					<div class="h-full border-r-2 border-slate-200 absolute"></div>
 				</div>
-				<button>Create</button>
-			</div>
+				<button popovertarget="createPopover">Create</button>
+        <CreateDisplay />
+      </div>
 
 			<textarea
 				bind:value={codeSample}
