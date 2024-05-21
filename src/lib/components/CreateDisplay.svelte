@@ -44,7 +44,7 @@
       drawGrid();
       const currentX = snapToGrid(event.offsetX, gridSpace);
       const currentY = snapToGrid(event.offsetY, gridSpace);
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.strokeStyle = 'rgba(0, 0, 0, 1)';
       ctx.strokeRect(startX, startY, currentX - startX, currentY - startY);
   }
 
@@ -60,8 +60,8 @@
 
       if (width != 0 && height != 0) {
           elements = [...elements, {
-              x: Math.min(startX, endX),
-              y: Math.min(startY, endY),
+              x: Math.min(startX, endX)+4,
+              y: Math.min(startY, endY)+4,
               width: Math.abs(width),
               height: Math.abs(height),
               color: 'rgba(0, 0, 255, 0.5)'
@@ -74,10 +74,6 @@
 
   function clearCanvas() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
-      elements.forEach(el => {
-          ctx.fillStyle = el.color;
-          ctx.fillRect(el.x, el.y, el.width, el.height);
-      });
   }
 
   function drawGrid() {
@@ -101,7 +97,7 @@
 <div
     popover
     id="createPopover"
-    class="relative w-[90%] h-[90%] rounded-md border-2 border-slate-300 shadow-md p-3"
+    class="relative w-[100%] h-[100%] rounded-md border-slate-300 shadow-md"
 >
   <div
       bind:this={elContainer}
@@ -114,7 +110,7 @@
           background-color: ${el.color};
           width: ${el.width}px;
           height: ${el.height}px;
-          border: 1px solid black;
+          border: 2px solid black;
           `}>
         </div>
       {/each}
@@ -122,9 +118,9 @@
 
   <div class="w-full h-full cursor-crosshair"
       bind:this={canvasContainer}
-      on:mousedown={onMouseDown}
-      on:mousemove={onMouseMove}
-      on:mouseup={onMouseUp}
+      on:pointerdown={onMouseDown}
+      on:pointermove={onMouseMove}
+      on:pointerup={onMouseUp}
   >
       <canvas bind:this={canvas} />
   </div>
@@ -135,6 +131,9 @@
 </div>
 
 <style>
+  :global(body){
+    overscroll-behavior: none;
+  }
   #createPopover::backdrop {
       @starting-style {
           opacity: 0;
