@@ -7,9 +7,11 @@
 
 	import { onMount } from 'svelte';
 	import { marked } from 'marked';
+
 	import markedCodePreview from 'marked-code-preview';
 	import SpeechRecognition from '$lib/components/SpeechRecognition.svelte';
 	import Settings from '$lib/components/Settings.svelte';
+  import KeyInput from '$lib/components/KeyInput.svelte';
 
   import CreateDisplay from '$lib/components/CreateDisplay.svelte';
 	import RadialProgress from '$lib/components/RadialProgress.svelte';
@@ -167,44 +169,37 @@
 	}
 </script>
 
-<div class="flex h-full flex-col sm:flex-row">
-	<div class="flex-1 flex flex-col p-2 gap-4">
+<div
+  class="
+  flex
+  h-full
+  flex-col
+  sm:flex-row
+  ">
+	<div
+    class="
+    flex-1
+    flex
+    flex-col
+    p-2
+    gap-4
+    ">
+    {key}
 		{#if !keyvalid}
-			<div class="flex w-full justify-center">
-				<div class="w-full gap-2 flex flex-col justify-center">
-					<div
-						class="text-center bg-slate-200 border-2 rounded-md text-slate-500 p-3 border-slate-400"
-					>
-						<p>
-							This is a design tool to help you generate code given a prompt and a design using the
-							OpenAI Vision API as well as the ChatGPT-4o model.
-						</p>
-						<br />
-						<p class="border-t-2 border-slate-300 border-dashed pt-4">
-							Please make sure you have an <a
-								class="underline underline-offset-2 font-bold"
-								href="https://platform.openai.com/account/api-keys"
-								target="_blank">OpenAI API key</a
-							>
-						</p>
-					</div>
-					<input
-						required="required"
-						type="password"
-						placeholder="Enter an OpenAI API Key"
-						bind:value={key}
-					/>
-					<button on:click={connectHandler}>Connect</button>
-				</div>
-			</div>
+    <KeyInput
+      {key}
+      {connectHandler}
+      />
 		{:else}
 			<Settings />
 
+      {key}
 			<div class="flex w-full gap-2 border-b-2 pb-3">
 				<input type="text" placeholder="Prompt" bind:value={prompt} />
 				<SpeechRecognition {handleSpeech} />
 			</div>
-			<div class="flex gap-3">
+
+      <div class="flex gap-3">
 				<div class="flex flex-1 flex-col">
 					<div class="flex items-center justify-center w-full gap-3">
             {#if fileInp}
@@ -212,8 +207,20 @@
             {/if}
 						<label
 							for="doc"
-							class="flex items-center p-4 gap-3 rounded-md border-2 border-gray-300 border-dashed bg-gray-50 cursor-pointer w-full justify-center"
-						>
+							class="
+              flex
+              items-center
+              p-4
+              gap-3
+              rounded-md
+              border-2
+              border-gray-300
+              border-dashed
+              bg-gray-50
+              cursor-pointer
+              w-full
+              justify-center
+              ">
 							<div class="space-y-2 w-full text-center">
 								<h4 class="text-base font-semibold text-gray-700">
 									{#if !fileInp}
@@ -280,60 +287,6 @@
 </div>
 
 <style>
-	.container {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		height: 100vh;
-		padding: 16px;
-		background-color: #f8f9fa;
-	}
-
-	.input-container {
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-		width: 100%;
-		max-width: 400px;
-		margin-bottom: 20px;
-	}
-
-	input,
-	textarea {
-		width: 100%;
-		padding: 10px;
-		border: 2px solid #ced4da;
-		border-radius: 4px;
-		font-size: 16px;
-	}
-
-	input:user-valid {
-		border-color: green;
-	}
-	textarea {
-		height: 200px;
-		resize: vertical;
-	}
-
-	button:disabled {
-		opacity: 0.5;
-		cursor: default;
-	}
-	button {
-		padding: 10px 20px;
-		border: none;
-		border-radius: 4px;
-		background-color: #007bff;
-		color: white;
-		font-size: 16px;
-		cursor: pointer;
-	}
-
-	button:hover {
-		background-color: #0056b3;
-	}
-
 	#settingsPopover::backdrop {
 		@starting-style {
 			opacity: 0;
