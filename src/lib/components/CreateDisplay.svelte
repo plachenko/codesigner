@@ -20,7 +20,8 @@
 
   let gridSpace = 15;
   onMount(() => {
-      ctx = canvas.getContext('2d');
+    ctx = canvas.getContext('2d');
+    // createPopover.togglePopover('open');
 
       popoverContainer = document.getElementById('createPopover');
 
@@ -29,7 +30,6 @@
           canvas.height = canvasContainer.offsetHeight;
 
           drawGrid();
-        //   console.log(e)
       });
 
       /*
@@ -41,6 +41,54 @@
 
   function snapToGrid(value: number, gridSize: number): number {
       return Math.round(value / gridSize) * gridSize;
+  }
+
+  function onPointerDn(event: PointerEvent) {
+      event.preventDefault();
+
+      isDragging = true;
+
+      startX = snapToGrid(event.offsetX, gridSpace);
+      startY = snapToGrid(event.offsetY, gridSpace);
+      clearCanvas();
+      drawGrid();
+  }
+
+  function onPointerMv(event: PointerEvent) {
+
+    if (!isDragging) return;
+
+    clearCanvas();
+    drawGrid();
+    const currentX = snapToGrid(event.offsetX, gridSpace);
+    const currentY = snapToGrid(event.offsetY, gridSpace);
+    ctx.strokeStyle = 'rgba(0, 0, 0, 1)';
+    ctx.strokeRect(startX, startY, currentX - startX, currentY - startY);
+  }
+
+  function onPointerUp(event: PointerEvent) {
+      if (!isDragging) return;
+      isDragging = false;
+
+      endX = snapToGrid(event.offsetX, gridSpace);
+      endY = snapToGrid(event.offsetY, gridSpace);
+
+      const width = endX - startX;
+      const height = endY - startY;
+
+      if (width != 0 && height != 0) {
+          elements = [...elements, {
+              x: Math.min(startX, endX)+4,
+              y: Math.min(startY, endY)+4,
+              width: Math.abs(width),
+              height: Math.abs(height),
+              color: 'rgba(0, 0, 255, 0.5)'
+          }];
+      }
+
+      clearCanvas();
+      drawGrid();
+
   }
 
   function onMouseDown(event: MouseEvent) {
@@ -112,8 +160,41 @@
     bind:this={createPopover}
     popover="auto"
     id="createPopover"
-    class="relative w-[92%] h-[92%] rounded-md border-slate-300 shadow-md"
->
+    class="
+    relative
+    w-[92%]
+    h-[92%]
+    rounded-md
+    border-slate-300
+    shadow-md
+    relative
+    ">
+    <div
+        onpointerdown={onPointerDn}
+        onpointermove={onPointerMv}
+        onpointerup={onPointerUp}
+        class="
+        absolute
+        top-0
+        left-0
+        z-20
+        w-full
+        h-full
+        "></div>
+    <div
+        bind:this={canvasContainer}
+        class="
+        w-full
+        h-full
+        cursor-crosshair
+        ">
+
+        <canvas bind:this={canvas} />
+    </div>
+
+
+<!--
+
   <div
       bind:this={elContainer}
   >
@@ -133,9 +214,9 @@
 
   <div class="w-full h-full cursor-crosshair"
       bind:this={canvasContainer}
-      on:pointerdown={onMouseDown}
-      on:pointermove={onMouseMove}
-      on:pointerup={onMouseUp}
+      onpointerdown={onMouseDown}
+      onpointermove={onMouseMove}
+      onpointerup={onMouseUp}
   >
       <canvas bind:this={canvas} />
   </div>
@@ -143,6 +224,7 @@
   <div class="left-0 absolute w-full bottom-3 flex justify-center">
       <button>Save</button>
   </div>
+-->
 </div>
 
 <style>
