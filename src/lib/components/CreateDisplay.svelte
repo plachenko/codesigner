@@ -8,8 +8,15 @@
   let isDragging = false;
   let elements = [];
   let elContainer: HTMLElement;
+  let createPopover: HTMLElement;
 
   let startX: number, startY: number, endX: number, endY: number;
+
+  let {
+    popoverOpenEvt
+  }: {
+    popoverOpenEvt: () => void
+  } = $props();
 
   let gridSpace = 15;
   onMount(() => {
@@ -17,12 +24,19 @@
 
       popoverContainer = document.getElementById('createPopover');
 
-      popoverContainer.addEventListener('toggle', () => {
+      createPopover.addEventListener('toggle', (e) => {
           canvas.width = canvasContainer.offsetWidth;
           canvas.height = canvasContainer.offsetHeight;
 
           drawGrid();
+        //   console.log(e)
       });
+
+      /*
+        createPopover.addEventListener('beforetoggle', (e: ToggleEvent): void => {
+            popoverOpenEvt(e.newState == 'open');
+        });
+        */
   });
 
   function snapToGrid(value: number, gridSize: number): number {
@@ -95,9 +109,10 @@
 </script>
 
 <div
-    popover
+    bind:this={createPopover}
+    popover="auto"
     id="createPopover"
-    class="relative w-[100%] h-[100%] rounded-md border-slate-300 shadow-md"
+    class="relative w-[92%] h-[92%] rounded-md border-slate-300 shadow-md"
 >
   <div
       bind:this={elContainer}
@@ -126,7 +141,7 @@
   </div>
 
   <div class="left-0 absolute w-full bottom-3 flex justify-center">
-      <button class="btn border-2 variant-filled p-2 rounded-md bg-slate-300">Save</button>
+      <button>Save</button>
   </div>
 </div>
 

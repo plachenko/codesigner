@@ -1,5 +1,15 @@
 <script lang="ts">
 	import DLInput from './DLInput.svelte';
+    import {onMount} from 'svelte';
+
+    let {
+        popoverOpenEvt
+    } : {
+        popoverOpenEvt: () => void
+    } = $props();
+
+    let settingsPopover: HTMLDivElement;
+
 	const programmingLanguages = [
 		'JavaScript',
 		'Python',
@@ -35,15 +45,24 @@
 		'Meteor',
 		'Express.js'
 	];
+
+    onMount(() => {
+        /*
+        settingsPopover.addEventListener('beforetoggle', (e: ToggleEvent): void => {
+            popoverOpenEvt(e.newState == 'open');
+        });
+        */
+    });
 </script>
 
 <button popovertarget="settingsPopover">settings</button>
 
 <div
+    bind:this={settingsPopover}
+    popover='auto'
 	id="settingsPopover"
-	popover
 	class="w-[90%] h-[90%] rounded-md border-2 border-slate-300 shadow-md p-3"
->
+    >
 	<div class="flex gap-2 flex-col">
 		<DLInput input={programmingLanguages} />
 	</div>
