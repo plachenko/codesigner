@@ -6,7 +6,7 @@
   let canvasContainer: HTMLElement;
   let ctx: CanvasRenderingContext2D;
   let isDragging = false;
-  let elements = [];
+  let elements = $state([]);
   let elContainer: HTMLElement;
   let createPopover: HTMLElement;
 
@@ -91,49 +91,6 @@
 
   }
 
-  function onMouseDown(event: MouseEvent) {
-      isDragging = true;
-      startX = snapToGrid(event.offsetX, gridSpace);
-      startY = snapToGrid(event.offsetY, gridSpace);
-      clearCanvas();
-      drawGrid();
-  }
-
-  function onMouseMove(event: MouseEvent) {
-      if (!isDragging) return;
-
-      clearCanvas();
-      drawGrid();
-      const currentX = snapToGrid(event.offsetX, gridSpace);
-      const currentY = snapToGrid(event.offsetY, gridSpace);
-      ctx.strokeStyle = 'rgba(0, 0, 0, 1)';
-      ctx.strokeRect(startX, startY, currentX - startX, currentY - startY);
-  }
-
-  function onMouseUp(event: MouseEvent) {
-      if (!isDragging) return;
-      isDragging = false;
-
-      endX = snapToGrid(event.offsetX, gridSpace);
-      endY = snapToGrid(event.offsetY, gridSpace);
-
-      const width = endX - startX;
-      const height = endY - startY;
-
-      if (width != 0 && height != 0) {
-          elements = [...elements, {
-              x: Math.min(startX, endX)+4,
-              y: Math.min(startY, endY)+4,
-              width: Math.abs(width),
-              height: Math.abs(height),
-              color: 'rgba(0, 0, 255, 0.5)'
-          }];
-      }
-
-      clearCanvas();
-      drawGrid();
-  }
-
   function clearCanvas() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
   }
@@ -164,6 +121,7 @@
     relative
     w-[92%]
     h-[92%]
+    touch-none
     rounded-md
     border-slate-300
     shadow-md
@@ -174,6 +132,7 @@
         onpointermove={onPointerMv}
         onpointerup={onPointerUp}
         class="
+        cursor-crosshair
         absolute
         top-0
         left-0
@@ -184,14 +143,37 @@
     <div
         bind:this={canvasContainer}
         class="
+        z-0
         w-full
         h-full
-        cursor-crosshair
         ">
-
-        <canvas bind:this={canvas} />
+        <canvas bind:this={canvas}></canvas>
     </div>
-
+    <div
+        bind:this={elContainer}
+        class="
+        absolute
+        top-0
+        left-0
+        z-10
+        absolute
+        w-full
+        h-full
+        "
+        >
+        {#each elements as el}
+        <div style={`
+            position: absolute;
+            left: ${el.x}px;
+            top: ${el.y}px;
+            background-color: ${el.color};
+            width: ${el.width}px;
+            height: ${el.height}px;
+            border: 2px solid black;
+            `}>
+        </div>
+        {/each}
+    </div>
 
 <!--
 

@@ -53,7 +53,6 @@
 			vision(prompt + 'using the provided the design with ONLY the code', e?.currentTarget.result)
 				.then((e) => {
 					textContent = e.message.content;
-					console.log(e);
 					loading = false;
 					generated = true;
 					generating = false;
