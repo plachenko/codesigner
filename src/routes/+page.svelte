@@ -171,9 +171,13 @@
                 { connectHandler }
                 />
 		{:else}
+        <!--
+
+
 			<Settings
                 {popoverOpenEvt}
                 />
+        -->
 
 			<div class="flex w-full gap-2 border-b-2 pb-3">
                 <div class="relative flex w-full">
