@@ -1,8 +1,7 @@
 <script lang="ts">
-
 	import { onMount } from 'svelte';
 	import { marked } from 'marked';
-    import { setKey, chat, vision } from '$lib/OpenAI';
+	import { setKey, chat, vision } from '$lib/OpenAI';
 
 	import markedCodePreview from 'marked-code-preview';
 	import SpeechRecognition from '$lib/components/SpeechRecognition.svelte';
@@ -16,10 +15,10 @@
 	let textContent: string = $state('');
 	let codeSample: string = $state('');
 	let fileInp = $state(null);
-    let popoverOpen = $state(false);
+	let popoverOpen = $state(false);
 
 	let loading = $state(false);
-    let pageLoaded = $state(false);
+	let pageLoaded = $state(false);
 
 	let imgMsg = $state('');
 	let generated = $state(false);
@@ -30,18 +29,18 @@
 		key = window.localStorage.getItem('key') || '';
 		if (key !== '') {
 			keyvalid = true;
-            setKey(key);
+			setKey(key);
 		}
-        pageLoaded = true;
+		pageLoaded = true;
 	});
 
 	function handleSpeech(textResponse) {
 		prompt = textResponse;
 	}
 
-    function popoverOpenEvt(e){
-        popoverOpen = e;
-    }
+	function popoverOpenEvt(e) {
+		popoverOpen = e;
+	}
 
 	function handleGenerate(prompt) {
 		loading = true;
@@ -50,7 +49,10 @@
 		let fr = new FileReader();
 		fr.readAsDataURL(fileInp[0]);
 		fr.addEventListener('loadend', (e) => {
-			vision(prompt + 'using the provided the design with ONLY the code', e?.currentTarget.result)
+			vision(
+				prompt + 'using the provided the design with ONLY the code',
+				e?.currentTarget.result
+			)
 				.then((e) => {
 					textContent = e.message.content;
 					loading = false;
@@ -71,7 +73,7 @@
 	}
 
 	function connectHandler(keyVal: string): void {
-        keyvalid = true;
+		keyvalid = true;
 		window.localStorage.setItem('key', keyVal);
 	}
 
@@ -98,20 +100,20 @@
 			handleGenerate(`${prompt}${codeSample !== '' ? ':' : ''} ${codeSample}`);
 		} else {
 			chat(`${prompt}${codeSample !== '' ? ':' : ''} ${codeSample}`)
-            .then((res) => {
-                if (res) {
-                    textContent = res.content;
-                }
-            })
-            .catch((err) => {
-                console.error(err);
-            })
-            .finally(() => {
-                generating = false;
-            });
+				.then((res) => {
+					if (res) {
+						textContent = res.content;
+					}
+				})
+				.catch((err) => {
+					console.error(err);
+				})
+				.finally(() => {
+					generating = false;
+				});
 		}
 
-        /*
+		/*
         chat('test')
         .then((res) => {
             console.log('res', res)
@@ -119,10 +121,10 @@
             console.log(err);
         });
         */
-    //    let chatRet = await chat(`${prompt}${codeSample !== '' ? ':' : ''} ${codeSample}`);
-    //    console.log('chatRet', chatRet)
+		//    let chatRet = await chat(`${prompt}${codeSample !== '' ? ':' : ''} ${codeSample}`);
+		//    console.log('chatRet', chatRet)
 
-        /*
+		/*
         console.log('generating....')
         console.log(chat)
 		if (fileInp) {
@@ -147,7 +149,7 @@
 </script>
 
 <div
-    inert={popoverOpen}
+	inert={popoverOpen}
 	class={`
     flex
     h-full
@@ -155,7 +157,7 @@
     sm:flex-row
     ${!pageLoaded ? 'hidden' : ''}
     `}
-    >
+>
 	<div
 		class="
         flex-1
@@ -164,14 +166,11 @@
         p-2
         gap-4
         "
-        >
+	>
 		{#if !keyvalid}
-			<KeyInput
-                { key }
-                { connectHandler }
-                />
+			<KeyInput {key} {connectHandler} />
 		{:else}
-        <!--
+			<!--
 
 
 			<Settings
@@ -180,11 +179,17 @@
         -->
 
 			<div class="flex w-full gap-2 border-b-2 pb-3">
-                <div class="relative flex w-full">
-                    <input autofocus type="text" class="pr-10" placeholder="Prompt" bind:value={prompt} />
-                    <button
-                        on:click={() => (prompt = '')}
-                        class="
+				<div class="relative flex w-full">
+					<input
+						autofocus
+						type="text"
+						class="pr-10"
+						placeholder="Prompt"
+						bind:value={prompt}
+					/>
+					<button
+						on:click={() => (prompt = '')}
+						class="
                         absolute
                         border-l-2
                         border-slate-300
@@ -195,10 +200,11 @@
                         enabled:hover:bg-slate-500/20
                         bg-transparent
                         text-slate-500
-                        ">
-                        x
-                    </button>
-                </div>
+                        "
+					>
+						x
+					</button>
+				</div>
 				<SpeechRecognition {handleSpeech} />
 			</div>
 
@@ -224,7 +230,7 @@
                             w-full
                             justify-center
                             "
-						    >
+						>
 							<div class="space-y-2 w-full text-center">
 								<h4 class="text-base font-semibold text-gray-700">
 									{#if !fileInp}
@@ -252,9 +258,7 @@
 					<div class="h-full border-r-2 border-slate-200 absolute"></div>
 				</div>
 				<button popovertarget="createPopover">Create</button>
-				<CreateDisplay
-                    {popoverOpenEvt}
-                    />
+				<CreateDisplay {popoverOpenEvt} />
 			</div>
 
 			<textarea
@@ -263,15 +267,15 @@
 				style="resize: none"
 				placeholder="Enter a Code Sample to adhere to (optional)"
 			></textarea>
-            <LoadButton
-                btnDisabled={prompt == '' || generating}
-                loadText={ 'Generate' }
-                loading={ generating }
-                { sendHandler }
-                />
+			<LoadButton
+				btnDisabled={prompt == '' || generating}
+				loadText={'Generate'}
+				loading={generating}
+				{sendHandler}
+			/>
 		{/if}
 	</div>
-    {#if textContent}
+	{#if textContent}
 		<div class="flex-1 p-2 flex flex-col gap-4">
 			<div class="border-2 h-full w-full rounded-md p-3 overflow-y-auto overflow-x-hidden">
 				{@html marked.use({ gfm: true }).use(markedCodePreview()).parse(textContent)}
@@ -284,7 +288,7 @@
 				</div>
 			{/if}
 		</div>
-    {/if}
+	{/if}
 </div>
 
 <style>
