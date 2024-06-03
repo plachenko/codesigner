@@ -42,11 +42,13 @@
 	},
 	"type": "module",
 	"dependencies": {
-		"@auth/core": "^0.31.0",
-		"@auth/sveltekit": "^1.1.0",
+		"@codemirror/lang-javascript": "^6.2.2",
+		"@xterm/xterm": "^5.5.0",
+		"codemirror": "^6.0.1",
 		"gsap": "^3.12.5",
 		"marked": "^12.0.2",
 		"marked-code-preview": "^1.3.6",
+		"node-gyp": "^10.1.0",
 		"openai": "^4.47.1",
 		"passport-github2": "^0.1.12"
 	}

@@ -16,16 +16,27 @@
 	let codeSample: string = $state('');
 	let fileInp = $state(null);
 	let popoverOpen = $state(false);
-
 	let loading = $state(false);
 	let pageLoaded = $state(false);
-
 	let imgMsg = $state('');
 	let generated = $state(false);
 	let keyvalid = $state(false);
 	let generating = $state(false);
+	let xterm;
+	let xtermCont;
 
-	onMount(() => {
+	onMount(async () => {
+		xterm = await import('@xterm/xterm');
+		const term = new xterm.Terminal();
+
+		setTimeout(() => {
+			term.open(xtermCont);
+			term.writeln('hi');
+			term.onData((e) => {
+				term.writeln(e);
+			});
+		}, 100);
+
 		key = window.localStorage.getItem('key') || '';
 		if (key !== '') {
 			keyvalid = true;
@@ -34,15 +45,15 @@
 		pageLoaded = true;
 	});
 
-	function handleSpeech(textResponse) {
+	function handleSpeech(textResponse: string) {
 		prompt = textResponse;
 	}
 
-	function popoverOpenEvt(e) {
+	function popoverOpenEvt(e: boolean) {
 		popoverOpen = e;
 	}
 
-	function handleGenerate(prompt) {
+	function handleGenerate(prompt: string) {
 		loading = true;
 		imgMsg = '';
 
@@ -112,39 +123,6 @@
 					generating = false;
 				});
 		}
-
-		/*
-        chat('test')
-        .then((res) => {
-            console.log('res', res)
-        }).catch((err) => {
-            console.log(err);
-        });
-        */
-		//    let chatRet = await chat(`${prompt}${codeSample !== '' ? ':' : ''} ${codeSample}`);
-		//    console.log('chatRet', chatRet)
-
-		/*
-        console.log('generating....')
-        console.log(chat)
-		if (fileInp) {
-			handleGenerate(`${prompt}${codeSample !== '' ? ':' : ''} ${codeSample}`);
-		} else {
-			chat(`${prompt}${codeSample !== '' ? ':' : ''} ${codeSample}`)
-				.then((res) => {
-            console.log('whasdfsdf', res)
-					if (res) {
-						textContent = res.content;
-					}
-				})
-				.catch((err) => {
-					console.error(err);
-				})
-                .finally(() => {
-                    generating = false;
-                })
-		}
-        */
 	}
 </script>
 
@@ -171,13 +149,10 @@
 			<KeyInput {key} {connectHandler} />
 		{:else}
 			<!--
-
-
 			<Settings
                 {popoverOpenEvt}
                 />
-        -->
-
+            -->
 			<div class="flex w-full gap-2 border-b-2 pb-3">
 				<div class="relative flex w-full">
 					<input
@@ -260,6 +235,8 @@
 				<button popovertarget="createPopover">Create</button>
 				<CreateDisplay {popoverOpenEvt} />
 			</div>
+
+			<div bind:this={xtermCont}></div>
 
 			<textarea
 				bind:value={codeSample}
