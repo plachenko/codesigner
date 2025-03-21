@@ -17,7 +17,7 @@
 	let codeSample: string = $state('');
 	let fileInp = $state(null);
 
-  let textResponse = $state('');
+	let textResponse = $state('');
 
 	let loading = $state(false);
 
@@ -35,7 +35,7 @@
 	});
 
 	function handleSpeech() {
-    console.log('tesasdfsadft')
+		console.log('tesasdfsadft');
 		// console.log('Recognized speech:', textResponse);
 		// prompt = textResponse
 	}
@@ -46,7 +46,10 @@
 		let fr = new FileReader();
 		fr.readAsDataURL(fileInp[0]);
 		fr.addEventListener('loadend', (e) => {
-			vision(prompt + 'using the provided the design with ONLY the code', e?.currentTarget.result)
+			vision(
+				prompt + 'using the provided the design with ONLY the code',
+				e?.currentTarget.result
+			)
 				.then((e) => {
 					textContent = e.message.content;
 					console.log(e);
@@ -90,7 +93,7 @@
 					},
 					{ role: 'user', content: query }
 				],
-				model: 'gpt-4o'
+				model: 'gpt-4o-mini'
 			});
 
 			// Make sure the response is as expected
@@ -108,7 +111,7 @@
 
 	export async function vision(query = 'What is in this image?', img = null) {
 		const response = await openai.chat.completions.create({
-			model: 'gpt-4o',
+			model: 'gpt-4o-mini',
 			messages: [
 				{
 					role: 'user',
@@ -169,23 +172,33 @@
 <div class="flex h-full flex-col sm:flex-row">
 	<div class="flex-1 flex flex-col p-2 gap-4">
 		{#if !keyvalid}
-    <div class="flex w-full justify-center">
-      <div class="w-full gap-2 flex flex-col justify-center">
-        <div class="text-center bg-slate-200 border-2 rounded-md text-slate-500 p-3 border-slate-400">
-          <p>This is a design tool to help you generate code given a prompt and a design using the OpenAI
-            Vision API as well as the ChatGPT-4o model. </p>
-            <br />
-            <p class="border-t-2 border-slate-300 border-dashed pt-4">Please make sure you have an <a
-            class="underline underline-offset-2 font-bold"
-            href="https://platform.openai.com/account/api-keys"
-            target="_blank">OpenAI API key</a
-          ></p>
-        </div>
-        <input required="required" type="password" placeholder="Enter an OpenAI API Key" bind:value={key} />
-        <button on:click={connectHandler}>Connect</button>
-      </div>
-    </div>
-
+			<div class="flex w-full justify-center">
+				<div class="w-full gap-2 flex flex-col justify-center">
+					<div
+						class="text-center bg-slate-200 border-2 rounded-md text-slate-500 p-3 border-slate-400"
+					>
+						<p>
+							This is a design tool to help you generate code given a prompt and a
+							design using the OpenAI Vision API as well as the ChatGPT-4o model.
+						</p>
+						<br />
+						<p class="border-t-2 border-slate-300 border-dashed pt-4">
+							Please make sure you have an <a
+								class="underline underline-offset-2 font-bold"
+								href="https://platform.openai.com/account/api-keys"
+								target="_blank">OpenAI API key</a
+							>
+						</p>
+					</div>
+					<input
+						required="required"
+						type="password"
+						placeholder="Enter an OpenAI API Key"
+						bind:value={key}
+					/>
+					<button on:click={connectHandler}>Connect</button>
+				</div>
+			</div>
 		{:else}
 			<div class="flex w-full gap-2 border-b-2 pb-3">
 				<input type="text" placeholder="Prompt" bind:value={prompt} />
@@ -281,9 +294,9 @@
 		font-size: 16px;
 	}
 
-  input:user-valid{
-    border-color: green;
-  }
+	input:user-valid {
+		border-color: green;
+	}
 	textarea {
 		height: 200px;
 		resize: vertical;

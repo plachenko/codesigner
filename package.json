@@ -49,7 +49,9 @@
 		"marked": "^12.0.2",
 		"marked-code-preview": "^1.3.6",
 		"node-gyp": "^10.1.0",
+		"node-pty": "^1.0.0",
 		"openai": "^4.47.1",
-		"passport-github2": "^0.1.12"
+		"passport-github2": "^0.1.12",
+		"ws": "^8.17.0"
 	}
 }
