@@ -1,9 +1,19 @@
-html, body{
-  height: 100%;
+html,
+body {
+	height: 100%;
 }
 
-body{
-  margin: 0px;
+body {
+	margin: 0px;
+}
+
+pre {
+	background: #333;
+	border: 1px solid #222;
+	color: #fff;
+	padding: 4px;
+	font-size: 0.8em !important;
+	margin-top: 10px;
 }
 
 /*

@@ -27,11 +27,22 @@
 	let showResp = $state(false);
 	let xtermCont;
 
+	async function checkKey() {
+		document.addEventListener('keyup', (e) => {
+			switch (e.keyCode) {
+				case 'Enter':
+					e.preventDefault();
+					console.log('test');
+					// copyText();
+					break;
+			}
+		});
+	}
+
 	onMount(async () => {
 		xterm = await import('@xterm/xterm');
 		const term = new xterm.Terminal();
-
-		document.addEventListener('keyup', (e) => {});
+		// checkKey();
 
 		setTimeout(() => {
 			//term.open(xtermCont);
@@ -41,18 +52,23 @@
 			});
 		}, 100);
 
-		document.addEventListener('keydown', (e) => {});
-
 		key = window.localStorage.getItem('key') || '';
 		if (key !== '') {
 			keyvalid = true;
-			setKey(key);
 		}
+		setKey(key);
 		pageLoaded = true;
 	});
 
 	function parseMD() {
-		return marked.use({ gfm: true }).use(markedCodePreview()).parse(textContent);
+		let ret = marked.use({ gfm: true }).use(markedCodePreview).parse(textContent);
+
+		let htmlObj = document.createElement('div');
+
+		htmlObj.appendChild('button');
+		htmlObj.innerHTML = ret + '<button class="absolute top-0 right-0">Copy</button>';
+
+		return ret;
 	}
 
 	function handleSpeech(textResponse: string) {
@@ -162,25 +178,26 @@
 >
 	{#if textContent.length && showResp}
 		<div class="gap-1 absolute top-0 flex flex-col bg-wshite p-1 w-full h-full z-[9998]">
-			<!--
-
--->
 			<div class="flex-1 bg-red-400 flex">
 				<div class="relative flex-1 top-0 left-0 border-box w-full h-full overflow-hidden">
 					<div class="w-full h-full">
 						<div
 							class="absolute w-[70px] rounded-md h-[20px] z-[9999] absolute cursor-pointer top-[0px]"
 						>
+							<!--
 							<button
 								on:click={copyText}
-								class={`${copied ? 'bg-slate-600 text-slate-300 font-bold' : ''} z-[9999] select-none  bg-slate-200 border-2 border-slate-400 rounded-md px-2 ml-2`}
+								class={`${copied ? 'bg-slate-600 text-slate-300 font-bold' : 'text-slate-500 bg-slate-200  hover:text-slate-200 hover:bg-slate-200'} p-1 z-[9999] select-none  bg-slate-200 border-2 border-slate-400 rounded-md px-2 ml-2`}
 								>{copied ? 'Copied' : 'Copy'}</button
 							>
+>-->
+							<!--
 							{#if copied}
 								<div
 									class="absolute top-[0px] left-[10px] z-[9995] animate-ping w-full h-full bg-red-400"
 								/>
 							{/if}
+-->
 						</div>
 
 						<div class="absolute p-1 h-full w-full overflow-y-auto">
