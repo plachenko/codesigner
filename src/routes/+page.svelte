@@ -65,10 +65,15 @@
 
 		let htmlObj = document.createElement('div');
 
-		htmlObj.appendChild('button');
 		htmlObj.innerHTML = ret + '<button class="absolute top-0 right-0">Copy</button>';
 
-		return ret;
+		const codeArr = Array.from(htmlObj.querySelectorAll('code'));
+		console.log('showing array....');
+		codeArr.forEach((e) => {
+			console.log(e);
+		});
+
+		return htmlObj.innerHTML;
 	}
 
 	function handleSpeech(textResponse: string) {
