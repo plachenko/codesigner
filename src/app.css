@@ -1,0 +1,52 @@
+@import "tailwindcss";
+
+html,
+body {
+    height: 100%;
+    overscroll-behavior: none;
+}
+
+[contenteditable] {
+    outline: 0px solid transparent;
+}
+
+p {
+    margin: 8px 0px;
+}
+
+:not(pre) > code {
+    background-color: #aaa;
+    border: 1px solid #000;
+    border-radius: 5px;
+    font-size: 0.7em;
+    display: inline-block;
+    padding: 0px 3px;
+}
+
+pre {
+    border-radius: 10px;
+    white-space: pre-wrap;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #222;
+    color: #fff;
+    padding: 10px;
+    font-size: 0.7em;
+    margin: 10px 0px;
+    overflow: hidden;
+}
+
+@layer base {
+    button {
+        @apply enabled:hover:bg-blue-700 bg-blue-500 text-white font-bold py-2 px-4 rounded cursor-pointer;
+    }
+
+    button:disabled {
+        @apply opacity-50 cursor-default;
+    }
+
+    input,
+    textarea {
+        @apply border border-gray-300 rounded p-2 w-full;
+    }
+}
