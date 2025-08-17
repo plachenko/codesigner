@@ -3,6 +3,7 @@
     import { onMount } from "svelte";
 
     import MidSection from "$lib/components/MidSection.svelte";
+    import ImageUpload from "$lib/components/ImageUpload.svelte";
 
     import { marked } from "marked";
     import markedCodePreview from "marked-code-preview";
@@ -12,6 +13,7 @@
 
     import KeyInput from "$lib/components/KeyInput.svelte";
     import PromptInput from "$lib/components/PromptInput.svelte";
+
     import Terminal from "$lib/components/Terminal.svelte";
 
     import LoadButton from "$lib/components/LoadButton.svelte";
@@ -19,13 +21,15 @@
     import SpeechRecognition from "$lib/components/SpeechRecognition.svelte";
     import HistoryList from "$lib/components/HistoryList.svelte";
 
+    let promptTxt = $state("");
     let key = $state("");
     let keyValid = $state(false);
     let appear = $state(false);
+    let midSectionEl = $state(null);
 
     let promptDiv = $state(null);
 
-    let showTerm = $state(true);
+    let showTerm = $state(false);
     let fsTerm = $state(false);
 
     let promptEl = $state(null);
@@ -42,6 +46,16 @@
     let historyEl = $state(null);
 
     let socket = $state();
+    let imgBlobArr = $state([]);
+
+    $effect(() => {
+        if (historyNum) {
+            promptTxt = historyArray[historyNum].promptTxt;
+        }
+        if (fsTerm) {
+            midSectionEl.requestFullScreen();
+        }
+    });
 
     onMount(async () => {
         const wsURL = `ws://${window.location.host}/ws`;
@@ -75,8 +89,8 @@
     });
 
     function handleSpeech(textResponse: string) {
-        prompt = textResponse;
-        sendHandler(prompt);
+        promptTxt = textResponse;
+        sendHandler(promptTxt);
     }
 
     function parseMD(text) {
@@ -97,16 +111,28 @@
 
     function resetHistory() {
         historyArray = new Array();
-        prompt = "";
+        promptTxt = "";
         resp = "";
         saveHistory();
     }
 
     function setHistory(idx) {
-        respSection.scrollTop = 0;
-        prompt = historyArray[idx].prompt;
-        resp = historyArray[idx].resp;
+        // respSection.scrollTop = 0;
+        // promptTxt = historyArray[idx].prompt;
+        // prompt = "hi";
+        // co
+        // console.log(promptTxt, historyArray[idx], idx);
+        // resp = historyArray[idx].resp;
+        if (idx == -1) {
+            promptTxt = "";
+            resp = null;
+            return;
+        }
+
         historyNum = idx;
+        resp = historyArray[idx].resp;
+        promptTxt = historyArray[idx].promptTxt;
+        console.log(historyArray[idx], idx);
     }
 
     function readHistory() {
@@ -117,21 +143,48 @@
     async function sendHandler(prompt) {
         generating = true;
 
-        chat(`${prompt}`)
-            .then((e) => {
-                resp = e?.content || "";
-                respCont.scrollTo(0, 0);
-                historyArray.push({ prompt, resp });
-                historyNum = historyArray.length - 1;
-                saveHistory();
-                prompt = "";
-            })
-            .catch((err) => {
-                console.log(err);
-            })
-            .finally(() => {
-                generating = false;
-            });
+        if (imgBlobArr.length) {
+            vision(`${prompt}`, imgBlobArr)
+                .then((e) => {
+                    // console.log(e);
+                    console.log(e.message.content);
+                    resp = e.message.content;
+
+                    // resp = e?.content.message.content || "";
+                    // historyArray.push({ prompt, resp });
+                    // historyNum = historyArray.length - 1;
+                    // saveHistory();
+                    prompt = "";
+                    imgBlobArr = [];
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+                .finally(() => {
+                    generating = false;
+                });
+        } else {
+            chat(`${prompt}`)
+                .then((e) => {
+                    resp = e?.content || "";
+                    // respCont.scrollTo(0, 0);
+                    promptTxt = prompt;
+                    historyArray.push({ promptTxt: prompt, resp });
+                    historyNum = historyArray.length - 1;
+                    saveHistory();
+                    prompt = "";
+                })
+                .catch((err) => {
+                    console.log(err);
+                })
+                .finally(() => {
+                    generating = false;
+                });
+        }
+    }
+
+    function toggleTerm() {
+        fsTerm = !fsTerm;
     }
 
     function connectHandler(keyVal: string): void {
@@ -148,37 +201,30 @@
             {:else}
                 <div class="h-full flex flex-col w-full">
                     {#if !fsTerm}
-                        <div class="bg-slate-400 p-2">
+                        <div class="bg-slate-400 p-2 flex">
                             {#if resp}
-                                <div class="flex flex-row w-full">
-                                    <div class="w-[65px] pr-2">
-                                        <button
-                                            class="h-full w-full"
-                                            onclick={() => {
-                                                resp = null;
-                                            }}>+</button>
-                                    </div>
+                                <div class="flex">
+                                    <!--
                                     <div
-                                        class="flex items-center text-slate-300 italic flex-1 border-l-2 pl-2 text-2xl">
+                                        class="flex items-center flex-1 border-l-2 border-slate-200 pl-2">
                                         <div
-                                            class="relative select-none bg-slate-100 p-1 rounded-md w-full">
-                                            {prompt}
-                                            <button
-                                                class="text-xs absolute right-1"
-                                                onclick={() => {
-                                                    resp = null;
-                                                }}>✏️</button>
+                                            contenteditable
+                                            class="focus:bg-slate-300 focus:text-slate-800 not-focus:italic text-slate-300 bg-slate-300/20 hover:bg-slate-300 hover:text-slate-500 rounded-md h-full w-full p-2 flex items-center">
+                                            {promptTxt}
                                         </div>
                                     </div>
+-->
                                 </div>
-                            {:else}
+                            {/if}
+                            <div class="flex-1">
                                 <PromptInput
                                     bind:this={promptDiv}
-                                    {prompt}
                                     {handleSpeech}
+                                    {promptTxt}
                                     {sendHandler}
+                                    {imgBlobArr}
                                     {generating} />
-                            {/if}
+                            </div>
                         </div>
                     {/if}
 
@@ -188,6 +234,7 @@
                                 <button
                                     class="shrink"
                                     onclick={() => {
+                                        console.log("clicking", showTerm);
                                         showTerm = !showTerm;
                                     }}>
                                     term
@@ -198,6 +245,7 @@
                                         class="absolute h-full w-full left-0 top-0">
                                         <HistoryList
                                             bind:this={historyEl}
+                                            {fsTerm}
                                             {setHistory}
                                             {resetHistory}
                                             {historyArray} />
@@ -205,10 +253,12 @@
                                 </div>
                             </div>
                         {/if}
+
                         <MidSection
+                            bind:this={midSectionEl}
                             {socket}
                             {parseCode}
-                            {fsTerm}
+                            {toggleTerm}
                             {showTerm}
                             {resp}
                             {parseMD} />

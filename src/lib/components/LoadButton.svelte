@@ -5,18 +5,18 @@
         btnDisabled,
         loading,
         loadText,
-        sendHandler,
+        promptSendHandler,
     }: {
         btnDisabled: boolean;
         loading: boolean;
         loadText: string;
-        sendHandler: () => void;
+        promptSendHandler: () => void;
     } = $props();
 </script>
 
 <button
     disabled={btnDisabled || false}
-    onclick={sendHandler}
+    onclick={promptSendHandler}
     class="
     justify-center
     flex

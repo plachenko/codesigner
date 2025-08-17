@@ -1,6 +1,8 @@
 <script lang="ts">
     import { onMount } from "svelte";
-    import { fade } from "svelte/transition";
+    import { fade, fly } from "svelte/transition";
+
+    import ImageUpload from "./ImageUpload.svelte";
 
     import SpeechRecognition from "./SpeechRecognition.svelte";
     import LoadButton from "./LoadButton.svelte";
@@ -8,17 +10,21 @@
     let promptEl = $state(null);
     let _prompt = $state("");
     let speechComp = $state(null);
-    let { prompt, sendHandler, generating, handleSpeech } = $props();
+    let { imgBlobArr, sendHandler, generating, handleSpeech, promptTxt } =
+        $props();
+    let showImgInp = $state(false);
 
     $effect(() => {
-        console.log(prompt, "prompt");
-        // prompt ? (_prompt = prompt) : (_prompt = "");
+        _prompt = promptTxt;
     });
 
     onMount(() => {
-        focusInp();
+        // focusInp();
     });
 
+    function setImages(e) {
+        imgBlobArr.push(e);
+    }
     export function focusInp() {
         if (promptEl) {
             promptEl.focus();
@@ -30,48 +36,64 @@
     }
 </script>
 
-<div class="gap-1 flex w-full">
-    <div class="pl-1 pr-[2px] flex-1 flex bg-white rounded-md gap-1">
+<div class="gap-1 flex flex-col w-full h-full">
+    <div
+        class={`${showImgInp ? "border-b-2 border-slate-300 border-dashed pb-2" : "border-none"}  gap-1 flex w-full h-full`}>
+        {#if !promptTxt}
+            <button
+                onclick={() => {
+                    showImgInp = !showImgInp;
+                }}>🖼️</button>
+        {/if}
         <div
-            class="hover:cursor-text items-center hfull flex-1 overflow-x-scroll relative flex">
+            class={`pl-1 pr-[2px] ${!_prompt ? "pt-2" : ""} flex-1 flex bg-white rounded-md h-full gap-1`}
+            `>
             <div
-                onkeydown={(e) => {
-                    switch (e.key) {
-                        case "Enter":
-                            e.preventDefault();
-                            promptSendHandler();
-                            break;
-                    }
-                }}
-                role="textbox"
-                tabindex="0"
-                bind:innerHTML={_prompt}
-                bind:this={promptEl}
-                class="w-full absolute whitespace-nowrap z-[9999]"
-                contenteditable>
+                class="hover:cursor-text items-center h-full flex-1 overflow-x-scroll relative flex">
+                <div
+                    onkeydown={(e) => {
+                        switch (e.key) {
+                            case "Enter":
+                                e.preventDefault();
+                                promptSendHandler();
+                                break;
+                        }
+                    }}
+                    role="textbox"
+                    tabindex="0"
+                    bind:innerHTML={_prompt}
+                    bind:this={promptEl}
+                    class="w-full absolute whitespace-nowrap z-[9999] h-full flex items-center"
+                    contenteditable>
+                </div>
+            </div>
+            <div class="flex items-center">
+                {#if _prompt}
+                    <button
+                        transition:fade
+                        onclick={() => {
+                            _prompt = "";
+                            focusInp();
+                        }}
+                        class="hover:bg-slate-400 bg-slate-400/40 text-sm"
+                        >X</button>
+                {/if}
             </div>
         </div>
-        <div class="flex items-center">
-            {#if _prompt}
-                <button
-                    transition:fade
-                    onclick={() => {
-                        _prompt = "";
-                        focusInp();
-                    }}
-                    class="hover:bg-slate-400 bg-slate-400/40 text-sm"
-                    >X</button>
+        <div class="flex flex-row gap-1">
+            <SpeechRecognition bind:this={speechComp} {handleSpeech} />
+            {#if _prompt !== ""}
+                <LoadButton
+                    btnDisabled={_prompt == "" || generating}
+                    loadText={"go"}
+                    loading={generating}
+                    {promptSendHandler} />
             {/if}
         </div>
     </div>
-    <div class="flex flex-row gap-1">
-        <SpeechRecognition bind:this={speechComp} {handleSpeech} />
-        {#if _prompt !== ""}
-            <LoadButton
-                btnDisabled={_prompt == "" || generating}
-                loadText={"go"}
-                loading={generating}
-                {promptSendHandler} />
-        {/if}
-    </div>
+    {#if showImgInp}
+        <div transition:fly={{ y: -10, duration: 300 }} class="w-full">
+            <ImageUpload {setImages} />
+        </div>
+    {/if}
 </div>

@@ -2,7 +2,7 @@
     import { fly } from "svelte/transition";
     import { onMount } from "svelte";
 
-    let { historyArray, resetHistory, setHistory } = $props();
+    let { historyArray, resetHistory, setHistory, fsTerm } = $props();
     let curHist = $state(null);
     let historyTick = $state(null);
     let historyTickInt = $state(0);
@@ -17,8 +17,8 @@
     }
 
     function scrollUp() {
-        console.log(outerEl.offsetHeight);
-        outerEl.scrollTop = 0;
+        // console.log(outerEl.offsetHeight);
+        // outerEl.scrollTop = 0;
         // outerEl.scrollTo(0 );
     }
 
@@ -26,14 +26,19 @@
         historyTickInt = historyArray.length;
         setTimeout(() => {
             show = true;
-            historyTick = setInterval(() => {
-                if (historyTickInt >= 0) historyTickInt--;
-            }, 150);
-        }, 400);
+            historyTickInt = 0;
 
+            // historyTick = setInterval(() => {
+            //     if (historyTickInt >= 0) historyTickInt--;
+            // }, 150);
+        }, 400);
+        // outerEl.scrollTop=0;
+
+        /*
         setTimeout(() => {
             scrollUp();
         }, 1500);
+        */
     });
 </script>
 
@@ -46,28 +51,41 @@
             <button
                 tabindex="0"
                 onclick={resetHistory}
-                class="rounded-md bg-blue-400 font-bold h-[24px] text-white cursor-pointer font-white flex py-0 justify-center place-center">
-                X
+                class="rounded-md bg-blue-400/30 hover:bg-blue-400/70 font-bold h-[24px] text-white cursor-pointer font-white flex py-0 justify-center place-center">
+                🗑️
             </button>
+            <div
+                class={`pl-2 leftScroll w-full h-full relative overflow-y-auto overflow-x-hidden flex gap-1 flex-col`}>
+                {#each historyArray as item, idx}
+                    {#if historyTickInt <= idx}
+                        <div class="flex justify-center items-center">
+                            <div
+                                class={`${curHist == idx ? "opacity-100 h-[20px] rounded-md" : "opacity-20"} bg-blue-400 size-[12px] rounded-full absolute left-[-5px]`}>
+                            </div>
+                            <button
+                                onclick={() => {
+                                    setHistory(idx);
+                                    curHist = idx;
+                                }}
+                                class={`${idx == curHist ? "font-bold bg-blue-400 hover:bg-blue-600" : "hover:bg-blue-400/40"}  cursor-pointer rounded-sm w-full min-h-[30px] p-1 flex justify-center items-center bg-blue-300`}>
+                                {idx}
+                            </button>
+                        </div>
+                    {/if}
+                {/each}
+                <button
+                    onclick={() => {
+                        setHistory(-1);
+                    }}
+                    class="border-dashed hover:bg-blue-400/70 border-2 bg-blue-400/50 border-blue-400"
+                    >+</button>
+            </div>
+        {:else}
+            <div
+                class="bg-blue-300/40 flex items-center text-xs font-bold text-blue-400 text-center h-full text-2xs rounded-md w-full h-full p-2 border-blue-400 border-dashed border-2">
+                Prompt History
+            </div>
         {/if}
-        <div
-            class={`${outerEl?.offsetHeight < historyArray.length * 2 ? "pl-2" : ""} leftScroll w-full h-full relative overflow-auto flex gap-1 flex-col`}>
-            {#each historyArray as item, idx}
-                {#if historyTickInt <= idx}
-                    <button
-                        transition:fly={{
-                            x: 10,
-                        }}
-                        onclick={() => {
-                            setHistory(idx);
-                            curHist = idx;
-                        }}
-                        class={`${idx == curHist ? "border-2 font-bold bg-blue-400" : "border-none"} hover:bg-blue-400/40 cursor-pointer rounded-sm w-full min-h-[30px] p-1 flex justify-center items-center bg-blue-300`}>
-                        {idx}
-                    </button>
-                {/if}
-            {/each}
-        </div>
     </div>
 {/if}
 
